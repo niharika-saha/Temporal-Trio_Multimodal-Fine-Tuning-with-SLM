@@ -47,9 +47,25 @@ The RICO Screen2Words was selected because the task is image captioning, where t
 
 ---
 
-## Model Architecture
+## Assumptions
 
-Base model: **Salesforce/blip-image-captioning-base**
+Several assumptions were made during the development of this model:
+
+- Each UI screenshot represents a single screen context that can be summarized with one caption.
+- Only the first caption in the dataset caption list is used as the ground truth description.
+- Captions are treated as short structured screen summaries, rather than long descriptive sentences.
+- The BLIP model is assumed to provide sufficiently strong visual representations of UI components without requiring additional OCR or layout parsing.
+- Training on a single GPU (T4) is assumed to be sufficient for fine-tuning a lightweight captioning model.
+
+---
+
+## Model Architecture and Approach
+
+The task is formulated as an image captioning problem, where a model learns to generate a natural language description from a UI screenshot. A pre-trained vision-language model is used as the base architecture. The model combines a visual encoder with a language decoder, enabling it to map visual features of UI layouts to corresponding textual descriptions.
+
+The fine-tuning process uses supervised learning on the RICO Screen2Words dataset, where each training sample consists of a UI screenshot paired with a caption describing the screen. During training, the model learns the relationship between UI elements and the textual description of the interface.
+
+Base model used: **Salesforce/blip-image-captioning-base**
 
 BLIP combines:
 
@@ -76,7 +92,7 @@ BLIP was chosen because it is:
 
 ---
 
-## Why BLIP Was Selected
+## Comparison of Candidate Models
 
 | Model    | Result                    |
 | -------- | ------------------------- |
@@ -225,6 +241,17 @@ print(caption)
 | display page of messages and other options | display page of messages with other options |
 | create account details for a chat app      | create account page for chat application    |
 | page displaying a search bar               | search page of application                  |
+
+---
+## Observations
+
+During fine-tuning and evaluation of the BLIP model, several observations were made:
+
+- The model converged quickly due to the short and structured captions in the RICO Screen2Words dataset.
+- Predictions were generally concise and aligned with the style of the dataset captions.
+- The model was able to identify common UI components such as search bars, message lists, and account pages.
+- Some predictions remain generic when different applications share similar interface layouts.
+- The model occasionally replaces specific app categories with broader descriptions such as "application page".
 
 ---
 
